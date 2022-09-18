@@ -8,10 +8,10 @@ else
 endif
 
 default: src/simple_ml_ext.cpp
-	c++ -O3 -Wall -shared -DNDEBUG -std=c++11 $(extra_flags) -fPIC $$(python -m pybind11 --includes) src/simple_ml_ext.cpp -o src/simple_ml_ext.so
+	c++ -O3 -Wall -shared -DNDEBUG -std=c++11 $(extra_flags) $(CXXFLAGS) -fPIC $$(python -m pybind11 --includes) src/simple_ml_ext.cpp -o src/simple_ml_ext.so
 
 test: src/test_simple_ml_ext.cpp src/simple_ml_ext.hpp
-	$(CXX) -o test src/test_simple_ml_ext.cpp -I/usr/local/include $$(python -m pybind11 --includes)
+	$(CXX) -o test src/test_simple_ml_ext.cpp -I/usr/local/include $(CXXFLAGS)
 	./test
 
 clean:
