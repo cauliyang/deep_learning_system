@@ -1,7 +1,6 @@
 //
 // Created by Yangyang Li <yangyang.li@northwestern.edu> on 9/17/22
 //
-
 #ifndef DEEP_LEARNING_SYSTEM_HW0_SRC_SIMPLE_ML_EXT_H_
 #define DEEP_LEARNING_SYSTEM_HW0_SRC_SIMPLE_ML_EXT_H_
 #include <cassert>
