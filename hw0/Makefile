@@ -4,7 +4,7 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
      extra_flags = -undefined dynamic_lookup
 else
-	 extra_flags = ""
+	 extra_flags =
 endif
 
 default: src/simple_ml_ext.cpp
