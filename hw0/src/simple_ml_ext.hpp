@@ -408,7 +408,7 @@ Matrix<T> sum(Matrix<T> const &matrix, size_t axis) {
 //--------Define Helper Functions----------------//
 template<typename T>
 Matrix<T> exp_normalize(Matrix<T> const &lhs, Matrix<T> const &rhs) {
-  auto res = lhs * rhs;
+  Matrix<T> res = lhs * rhs;
   res.for_each([](T item) { return std::exp(item); });
   auto row_sum = sum(res, 1);
   return res / row_sum;
