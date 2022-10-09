@@ -1,19 +1,19 @@
-import struct
-import numpy as np
 import gzip
-import sys
 import math
+import struct
+import sys
+
+import numpy as np
 
 try:
     from simple_ml_ext import *
-except:
+except ImportError:
     pass
 
 
 def add(x, y):
-    """A trivial 'add' function you should implement to get used to the
-    autograder and submission system.  The solution to this problem is in the
-    the homework notebook.
+    """A trivial 'add' function you should implement to get used to the autograder and submission
+    system.  The solution to this problem is in the the homework notebook.
 
     Args:
         x (Python number or numpy array)
@@ -34,9 +34,7 @@ def byteorder():
 def parse_image(filename):
     bytes = gzip.open(filename, "rb").read()
 
-    _, num_of_images, num_of_rows, num_of_columns = struct.unpack(
-        f"{byteorder()}4l", bytes[:16]
-    )
+    _, num_of_images, num_of_rows, num_of_columns = struct.unpack(f"{byteorder()}4l", bytes[:16])
     pixels = []
     for (pixel,) in struct.iter_unpack(f"{byteorder()}B", bytes[16:]):
         pixels.append(pixel)
@@ -86,9 +84,9 @@ def parse_mnist(image_filename, label_filename):
 
 
 def softmax_loss(Z, y):
-    """Return softmax loss.  Note that for the purposes of this assignment,
-    you don't need to worry about "nicely" scaling the numerical properties
-    of the log-sum-exp computation, but can just compute this directly.
+    """Return softmax loss.  Note that for the purposes of this assignment, you don't need to worry
+    about "nicely" scaling the numerical properties of the log-sum-exp computation, but can just
+    compute this directly.
 
     Args:
         Z (np.ndarray[np.float32]): 2D numpy array of shape
@@ -117,10 +115,9 @@ def one_hot(y, k):
 
 
 def softmax_regression_epoch(X, y, theta, lr=0.1, batch=100):
-    """Run a single epoch of SGD for softmax regression on the data, using
-    the step size lr and specified batch size.  This function should modify the
-    theta matrix in place, and you should iterate through batches in X _without_
-    randomizing the order.
+    """Run a single epoch of SGD for softmax regression on the data, using the step size lr and
+    specified batch size.  This function should modify the theta matrix in place, and you should
+    iterate through batches in X _without_ randomizing the order.
 
     Args:
         X (np.ndarray[np.float32]): 2D input array of size
@@ -147,8 +144,9 @@ def softmax_regression_epoch(X, y, theta, lr=0.1, batch=100):
 
 
 def nn_epoch(X, y, W1, W2, lr=0.1, batch=100):
-    """Run a single epoch of SGD for a two-layer neural network defined by the
-    weights W1 and W2 (with no bias terms):
+    """Run a single epoch of SGD for a two-layer neural network defined by the weights W1 and W2
+    (with no bias terms):
+
         logits = ReLU(X * W1) * W2
     The function should use the step size lr, and the specified batch size (and
     again, without randomizing the order of X).  It should modify the
@@ -187,12 +185,12 @@ def nn_epoch(X, y, W1, W2, lr=0.1, batch=100):
 
 
 def loss_err(h, y):
-    """Helper funciton to compute both loss and error"""
+    """Helper funciton to compute both loss and error."""
     return softmax_loss(h, y), np.mean(h.argmax(axis=1) != y)
 
 
 def train_softmax(X_tr, y_tr, X_te, y_te, epochs=10, lr=0.5, batch=100, cpp=False):
-    """Example function to fully train a softmax regression classifier"""
+    """Example function to fully train a softmax regression classifier."""
     theta = np.zeros((X_tr.shape[1], y_tr.max() + 1), dtype=np.float32)
     print("| Epoch | Train Loss | Train Err | Test Loss | Test Err |")
     for epoch in range(epochs):
@@ -210,7 +208,7 @@ def train_softmax(X_tr, y_tr, X_te, y_te, epochs=10, lr=0.5, batch=100, cpp=Fals
 
 
 def train_nn(X_tr, y_tr, X_te, y_te, hidden_dim=500, epochs=10, lr=0.5, batch=100):
-    """Example function to train two layer neural network"""
+    """Example function to train two layer neural network."""
     n, k = X_tr.shape[1], y_tr.max() + 1
     np.random.seed(0)
     W1 = np.random.randn(n, hidden_dim).astype(np.float32) / np.sqrt(hidden_dim)
@@ -229,12 +227,8 @@ def train_nn(X_tr, y_tr, X_te, y_te, hidden_dim=500, epochs=10, lr=0.5, batch=10
 
 
 if __name__ == "__main__":
-    X_tr, y_tr = parse_mnist(
-        "data/train-images-idx3-ubyte.gz", "data/train-labels-idx1-ubyte.gz"
-    )
-    X_te, y_te = parse_mnist(
-        "data/t10k-images-idx3-ubyte.gz", "data/t10k-labels-idx1-ubyte.gz"
-    )
+    X_tr, y_tr = parse_mnist("data/train-images-idx3-ubyte.gz", "data/train-labels-idx1-ubyte.gz")
+    X_te, y_te = parse_mnist("data/t10k-images-idx3-ubyte.gz", "data/t10k-labels-idx1-ubyte.gz")
 
     print("Training softmax regression")
     train_softmax(X_tr, y_tr, X_te, y_te, epochs=10, lr=0.1)

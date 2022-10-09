@@ -1,6 +1,6 @@
 """Core data structures."""
 from collections import namedtuple
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import List, NamedTuple, Optional, Tuple, Union
 
 import needle
 import numpy
@@ -9,8 +9,8 @@ import numpy
 LAZY_MODE = False
 TENSOR_COUNTER = 0
 
-# NOTE: we will import numpy as the array_api
-# as the backend for our computations, this line will change in later homeworks
+# NOTE: we will numpy as the array_api
+# to backup our computations, this line will change in later homeworks
 import numpy as array_api
 
 NDArray = numpy.ndarray
@@ -98,18 +98,10 @@ class Op:
 
 
 class TensorOp(Op):
-    """Op class specialized to output tensors, will be alternate subclasses for other
-    structures."""
+    """Op class specialized to output tensors, will be alterate subclasses for other structures."""
 
     def __call__(self, *args):
         return Tensor.make_from_op(self, args)
-
-
-class TensorTupleOp(Op):
-    """Op class specialized to output TensorTuple."""
-
-    def __call__(self, *args):
-        return TensorTuple.make_from_op(self, args)
 
 
 class Value:
@@ -182,7 +174,7 @@ class Value:
         return value
 
 
-# Not needed in HW1
+### Not needed in HW1
 class TensorTuple(Value):
     """Represent a tuple of tensors.
 
@@ -329,10 +321,9 @@ class Tensor(Value):
             return needle.ops.MulScalar(other)(self)
 
     def __pow__(self, other):
-        if isinstance(other, Tensor):
-            raise NotImplementedError()
-        else:
-            return needle.ops.PowerScalar(other)(self)
+        ### BEGIN YOUR SOLUTION
+        raise NotImplementedError()
+        ### END YOUR SOLUTION
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
