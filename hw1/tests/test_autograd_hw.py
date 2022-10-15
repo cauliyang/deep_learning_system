@@ -344,7 +344,7 @@ def submit_forward():
 
 
 ##############################################################################
-### TESTS/SUBMISSION CODE FOR backward passes
+# TESTS/SUBMISSION CODE FOR backward passes
 
 
 def gradient_check(f, *args, tol=1e-6, backward=False, **kwargs):
@@ -399,6 +399,18 @@ def test_matmul_batched_backward():
     )
     gradient_check(
         ndl.matmul, ndl.Tensor(np.random.randn(5, 4)), ndl.Tensor(np.random.randn(6, 6, 4, 3))
+    )
+
+    gradient_check(
+        ndl.matmul, ndl.Tensor(np.random.randn(2, 4)), ndl.Tensor(np.random.randn(7, 4, 2))
+    )
+    gradient_check(
+        ndl.matmul,
+        ndl.Tensor(np.random.randn(3, 2, 1)),
+        ndl.Tensor(np.random.randn(3, 3, 1, 2)),
+    )
+    gradient_check(
+        ndl.matmul, ndl.Tensor(np.random.randn(2, 4)), ndl.Tensor(np.random.randn(2, 4, 4, 2))
     )
 
 
@@ -601,7 +613,6 @@ def test_topo_sort():
 
 
 def submit_topo_sort():
-
     # mugrade test case 1
     a2, b2 = ndl.Tensor(np.asarray([[0.74683138]])), ndl.Tensor(np.asarray([[0.65539231]]))
     c2 = 9 * a2 * a2 + 15 * b2 * a2 - b2

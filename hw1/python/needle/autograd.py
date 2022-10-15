@@ -130,7 +130,6 @@ class Value:
             return self.cached_data
         # note: data implicitly calls realized cached data
         self.cached_data = self.op.compute(*[x.realize_cached_data() for x in self.inputs])
-        self.cached_data
         return self.cached_data
 
     def is_leaf(self):
@@ -202,8 +201,7 @@ class TensorTuple(Value):
     def __repr__(self):
         return "needle.TensorTuple" + str(self.tuple())
 
-    def __str__(self):
-        return self.__repr__()
+    __str__ = __repr__
 
     def __add__(self, other):
         assert isinstance(other, TensorTuple)
@@ -388,9 +386,19 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
 
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    for node in reverse_topo_order:
+        # Compute gradient of the node with respect to the output node.
+        # This is the sum of gradient contributions from each output node.
+        node.grad = sum_node_list(node_to_output_grads_list[node])
+
+        if not node.is_leaf():
+            # Compute gradient of the node with respect to each of its inputs.
+            node_grads = node.op.gradient(node.grad, node)
+            # Add the gradient contribution to each input node.
+            for input_node, input_node_grad in zip(node.inputs, node_grads):
+                if input_node not in node_to_output_grads_list:
+                    node_to_output_grads_list[input_node] = []
+                node_to_output_grads_list[input_node].append(input_node_grad)
 
 
 def find_topo_sort(node_list: List[Value]) -> List[Value]:
@@ -400,16 +408,32 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     based on input edges. Since a node is added to the ordering after all its predecessors are
     traversed due to post-order DFS, we get a topological sort.
     """
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+
+    visited = set()
+    topo_order = []
+    topo_sort_dfs(node_list[0], visited, topo_order)
+    return topo_order
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS."""
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    if node in visited:
+        return
+
+    if node.is_leaf():
+        visited.add(node)
+        topo_order.append(node)
+        return
+
+    inputs = node.inputs
+    if len(inputs) == 2:
+        topo_sort_dfs(inputs[0], visited, topo_order)
+        topo_sort_dfs(inputs[1], visited, topo_order)
+    elif len(inputs) == 1:
+        topo_sort_dfs(inputs[0], visited, topo_order)
+
+    visited.add(node)
+    topo_order.append(node)
 
 
 ##############################
