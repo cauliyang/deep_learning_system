@@ -6,6 +6,8 @@ Deep Learning System is a course from CMU. This repository contains my solutions
 
 ## [Hw0](hw0/README.md)
 
-![img.png](imgs/img.png)
+![img.png](imgs/hw0.png)
 
 ## [Hw1](hw1)
+
+![img.png](imgs/hw1.png)
