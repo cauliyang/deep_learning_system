@@ -1,4 +1,6 @@
-"""Optimization module"""
+"""Optimization module."""
+import math
+
 import needle as ndl
 import numpy as np
 
@@ -24,9 +26,20 @@ class SGD(Optimizer):
         self.weight_decay = weight_decay
 
     def step(self):
-        ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        # setp
+        for param in self.params:
+            if param.grad is None:
+                continue
+
+            # NOTE: Apply weight decay firstly is very important to be consistent with PyTorc
+            grad = param.grad.data + param.data * self.weight_decay
+
+            u_t = self.u.get(param, 0)
+
+            u_t_1 = self.momentum * u_t + (1 - self.momentum) * grad
+
+            param.data -= self.lr * u_t_1
+            self.u[param] = u_t_1  # may need to change key
 
 
 class Adam(Optimizer):
@@ -51,6 +64,27 @@ class Adam(Optimizer):
         self.v = {}
 
     def step(self):
-        ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+
+        self.t += 1
+        for param in self.params:
+            if param.grad is None:
+                continue
+
+            # NOTE: Apply weight decay firstly is very important to be consistent with PyTorch
+            grad = param.grad.data + param.data * self.weight_decay
+
+            u_t = self.m.get(param, 0)
+            v_t = self.v.get(param, 0)
+
+            u_t_1 = self.beta1 * u_t + (1 - self.beta1) * grad
+            v_t_1 = self.beta2 * v_t + (1 - self.beta2) * grad * grad
+
+            u_t_1_hat = u_t_1 / (1 - math.pow(self.beta1, self.t))
+            v_t_1_hat = v_t_1 / (1 - math.pow(self.beta2, self.t))
+
+            grad_weight = u_t_1_hat / (ndl.power_scalar(v_t_1_hat, 0.5) + self.eps)
+
+            param.data -= self.lr * grad_weight
+
+            self.m[param] = u_t_1
+            self.v[param] = v_t_1

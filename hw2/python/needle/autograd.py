@@ -1,7 +1,8 @@
 """Core data structures."""
-import needle
-from typing import List, Optional, NamedTuple, Tuple, Union
 from collections import namedtuple
+from typing import List, NamedTuple, Optional, Tuple, Union
+
+import needle
 import numpy
 from needle import init
 
@@ -21,7 +22,7 @@ class Device:
 
 
 class CPUDevice(Device):
-    """Represents data that sits in CPU"""
+    """Represents data that sits in CPU."""
 
     def __repr__(self):
         return "needle.cpu()"
@@ -42,12 +43,12 @@ class CPUDevice(Device):
         return numpy.ones(shape, dtype=dtype)
 
     def randn(self, *shape):
-        # note: numpy doesn't support types within standard random routines, and 
+        # note: numpy doesn't support types within standard random routines, and
         # .astype("float32") does work if we're generating a singleton
-        return numpy.random.randn(*shape) 
+        return numpy.random.randn(*shape)
 
     def rand(self, *shape):
-        # note: numpy doesn't support types within standard random routines, and 
+        # note: numpy doesn't support types within standard random routines, and
         # .astype("float32") does work if we're generating a singleton
         return numpy.random.rand(*shape)
 
@@ -56,12 +57,12 @@ class CPUDevice(Device):
 
 
 def cpu():
-    """Return cpu device"""
+    """Return cpu device."""
     return CPUDevice()
 
 
 def all_devices():
-    """return a list of all available devices"""
+    """return a list of all available devices."""
     return [cpu()]
 
 
@@ -83,7 +84,6 @@ class Op:
         -------
         output: nd.array
             Array output of the operation
-
         """
         raise NotImplementedError()
 
@@ -109,7 +109,7 @@ class Op:
         raise NotImplementedError()
 
     def gradient_as_tuple(self, out_grad: "Value", node: "Value") -> Tuple["Value"]:
-        """ Convenience method to always return a tuple from gradient call"""
+        """Convenience method to always return a tuple from gradient call."""
         output = self.gradient(out_grad, node)
         if isinstance(output, tuple):
             return output
@@ -120,14 +120,14 @@ class Op:
 
 
 class TensorOp(Op):
-    """ Op class specialized to output tensors, will be alterate subclasses for other structures """
+    """Op class specialized to output tensors, will be alterate subclasses for other structures."""
 
     def __call__(self, *args):
         return Tensor.make_from_op(self, args)
 
 
 class TensorTupleOp(Op):
-    """Op class specialized to output TensorTuple"""
+    """Op class specialized to output TensorTuple."""
 
     def __call__(self, *args):
         return TensorTuple.make_from_op(self, args)
@@ -145,7 +145,7 @@ class Value:
     requires_grad: bool
 
     def realize_cached_data(self):
-        """Run compute to realize the cached data"""
+        """Run compute to realize the cached data."""
         # avoid recomputation
         if self.cached_data is not None:
             return self.cached_data
@@ -220,7 +220,7 @@ class TensorTuple(Value):
         return needle.ops.tuple_get_item(self, index)
 
     def tuple(self):
-        return tuple([x for x in self])
+        return tuple(x for x in self)
 
     def __repr__(self):
         return "needle.TensorTuple" + str(self.tuple())
@@ -309,7 +309,7 @@ class Tensor(Value):
     @data.setter
     def data(self, value):
         assert isinstance(value, Tensor)
-        assert value.dtype == self.dtype, "%s %s" % (
+        assert value.dtype == self.dtype, "{} {}".format(
             value.dtype,
             self.dtype,
         )
@@ -336,7 +336,11 @@ class Tensor(Value):
         return data.device
 
     def backward(self, out_grad=None):
-        out_grad = out_grad if out_grad else init.ones(*self.shape, dtype=self.dtype, device=self.device)
+        out_grad = (
+            out_grad
+            if out_grad
+            else init.ones(*self.shape, dtype=self.dtype, device=self.device)
+        )
         compute_gradient_of_variables(self, out_grad)
 
     def __repr__(self):
@@ -364,9 +368,10 @@ class Tensor(Value):
             return needle.ops.MulScalar(other)(self)
 
     def __pow__(self, other):
-        ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        if isinstance(other, Tensor):
+            raise NotImplementedError()
+        else:
+            return needle.ops.PowerScalar(other)(self)
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
@@ -422,29 +427,54 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
 
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    for node in reverse_topo_order:
+        # Compute gradient of the node with respect to the output node.
+        # This is the sum of gradient contributions from each output node.
+        node.grad = sum_node_list(node_to_output_grads_list[node])
+
+        if not node.is_leaf():
+            # Compute gradient of the node with respect to each of its inputs.
+            node_grads = node.op.gradient(node.grad, node)
+            # Add the gradient contribution to each input node.
+            for input_node, input_node_grad in zip(node.inputs, node_grads):
+                if input_node not in node_to_output_grads_list:
+                    node_to_output_grads_list[input_node] = []
+                node_to_output_grads_list[input_node].append(input_node_grad)
 
 
 def find_topo_sort(node_list: List[Value]) -> List[Value]:
     """Given a list of nodes, return a topological sort list of nodes ending in them.
 
-    A simple algorithm is to do a post-order DFS traversal on the given nodes,
-    going backwards based on input edges. Since a node is added to the ordering
-    after all its predecessors are traversed due to post-order DFS, we get a topological
-    sort.
+    A simple algorithm is to do a post-order DFS traversal on the given nodes, going backwards
+    based on input edges. Since a node is added to the ordering after all its predecessors are
+    traversed due to post-order DFS, we get a topological sort.
     """
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+
+    visited = set()
+    topo_order = []
+    topo_sort_dfs(node_list[0], visited, topo_order)
+    return topo_order
 
 
 def topo_sort_dfs(node, visited, topo_order):
-    """Post-order DFS"""
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    """Post-order DFS."""
+    if node in visited:
+        return
+
+    if node.is_leaf():
+        visited.add(node)
+        topo_order.append(node)
+        return
+
+    inputs = node.inputs
+    if len(inputs) == 2:
+        topo_sort_dfs(inputs[0], visited, topo_order)
+        topo_sort_dfs(inputs[1], visited, topo_order)
+    elif len(inputs) == 1:
+        topo_sort_dfs(inputs[0], visited, topo_order)
+
+    visited.add(node)
+    topo_order.append(node)
 
 
 ##############################
@@ -453,7 +483,9 @@ def topo_sort_dfs(node, visited, topo_order):
 
 
 def sum_node_list(node_list):
-    """Custom sum function in order to avoid create redundant nodes in Python sum implementation."""
-    from operator import add
+    """Custom sum function in order to avoid create redundant nodes in Python sum
+    implementation."""
     from functools import reduce
+    from operator import add
+
     return reduce(add, node_list)
