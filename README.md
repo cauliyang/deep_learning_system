@@ -11,3 +11,7 @@ Deep Learning System is a course from CMU. This repository contains my solutions
 ## [Hw1](hw1)
 
 ![img.png](imgs/hw1.png)
+
+## [Hw2](hw2)
+
+![img.png](imgs/hw2.png)
