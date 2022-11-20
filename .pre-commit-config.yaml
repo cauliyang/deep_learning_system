@@ -8,12 +8,12 @@ repos:
       # list of supported hooks: https://pre-commit.com/hooks.html
       - id: trailing-whitespace
       - id: end-of-file-fixer
-      - id: check-docstring-first
+      # - id: check-docstring-first
       - id: check-symlinks
       - id: check-yaml
       - id: debug-statements
       - id: detect-private-key
-      - id: check-executables-have-shebangs
+      # - id: check-executables-have-shebangs
       - id: check-toml
       - id: check-case-conflict
       - id: check-added-large-files
@@ -57,15 +57,16 @@ repos:
             "--extend-ignore",
             "E203,E402,E501,F401,F841",
             "--exclude",
-            "logs/*,data/*",
+            "logs/*,data/*,*/tests/*",
           ]
 
   # python security linter
-  - repo: https://github.com/PyCQA/bandit
-    rev: "1.7.1"
-    hooks:
-      - id: bandit
-        args: ["-s", "B101"]
+  #
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: "1.7.1"
+  #   hooks:
+  #     - id: bandit
+  #       args: ["-s", "B101"]
 
   # yaml formatting
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -120,7 +121,7 @@ repos:
         args:
           [
             "--extend-ignore=E203,E402,E501,F401,F841,E231",
-            "--exclude=logs/*,data/*",
+            "--exclude=logs/*,data/*,hw2/tests/*,lecture4/*",
           ]
       - id: nbqa-pyupgrade
         args: ["--py37-plus"]

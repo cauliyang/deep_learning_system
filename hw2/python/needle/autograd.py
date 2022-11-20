@@ -1,6 +1,6 @@
 """Core data structures."""
 from collections import namedtuple
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 import needle
 import numpy
@@ -87,9 +87,7 @@ class Op:
         """
         raise NotImplementedError()
 
-    def gradient(
-        self, out_grad: "Value", node: "Value"
-    ) -> Union["Value", Tuple["Value"]]:
+    def gradient(self, out_grad: "Value", node: "Value") -> Union["Value", Tuple["Value"]]:
         """Compute partial adjoint for each input value for a given output adjoint.
 
         Parameters
@@ -150,9 +148,7 @@ class Value:
         if self.cached_data is not None:
             return self.cached_data
         # note: data implicitly calls realized cached data
-        self.cached_data = self.op.compute(
-            *[x.realize_cached_data() for x in self.inputs]
-        )
+        self.cached_data = self.op.compute(*[x.realize_cached_data() for x in self.inputs])
         self.cached_data
         return self.cached_data
 
@@ -242,13 +238,7 @@ class Tensor(Value):
     grad: "Tensor"
 
     def __init__(
-        self,
-        array,
-        *,
-        device: Optional[Device] = None,
-        dtype=None,
-        requires_grad=True,
-        **kwargs
+        self, array, *, device: Optional[Device] = None, dtype=None, requires_grad=True, **kwargs
     ):
         if isinstance(array, Tensor):
             if device is None:
@@ -259,9 +249,7 @@ class Tensor(Value):
                 cached_data = array.realize_cached_data()
             else:
                 # fall back, copy through numpy conversion
-                cached_data = Tensor._array_from_numpy(
-                    array.numpy(), device=device, dtype=dtype
-                )
+                cached_data = Tensor._array_from_numpy(array.numpy(), device=device, dtype=dtype)
         else:
             device = device if device else cpu()
             cached_data = Tensor._array_from_numpy(array, device=device, dtype=dtype)
@@ -295,9 +283,7 @@ class Tensor(Value):
         tensor._init(
             None,
             [],
-            cached_data=data
-            if not isinstance(data, Tensor)
-            else data.realize_cached_data(),
+            cached_data=data if not isinstance(data, Tensor) else data.realize_cached_data(),
             requires_grad=requires_grad,
         )
         return tensor
@@ -337,9 +323,7 @@ class Tensor(Value):
 
     def backward(self, out_grad=None):
         out_grad = (
-            out_grad
-            if out_grad
-            else init.ones(*self.shape, dtype=self.dtype, device=self.device)
+            out_grad if out_grad else init.ones(*self.shape, dtype=self.dtype, device=self.device)
         )
         compute_gradient_of_variables(self, out_grad)
 

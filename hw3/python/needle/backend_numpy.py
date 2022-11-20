@@ -1,14 +1,13 @@
-"""This file defies specific implementations of devices when using numpy as NDArray backend.
-"""
+"""This file defies specific implementations of devices when using numpy as NDArray backend."""
 import numpy
 
 
 class Device:
-    """Baseclass of all device"""
+    """Baseclass of all device."""
 
 
 class CPUDevice(Device):
-    """Represents data that sits in CPU"""
+    """Represents data that sits in CPU."""
 
     def __repr__(self):
         return "needle.cpu()"
@@ -39,7 +38,7 @@ class CPUDevice(Device):
 
 
 def cpu():
-    """Return cpu device"""
+    """Return cpu device."""
     return CPUDevice()
 
 
@@ -48,5 +47,5 @@ def default_device():
 
 
 def all_devices():
-    """return a list of all available devices"""
+    """return a list of all available devices."""
     return [cpu()]

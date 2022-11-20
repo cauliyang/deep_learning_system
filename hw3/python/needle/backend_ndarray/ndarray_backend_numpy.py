@@ -1,6 +1,5 @@
 import numpy as np
 
-
 __device_name__ = "numpy"
 _datatype = np.float32
 _datetype_size = np.dtype(_datatype).itemsize
@@ -17,7 +16,7 @@ class Array:
 
 def to_numpy(a, shape, strides, offset):
     return np.lib.stride_tricks.as_strided(
-        a.array[offset:], shape, tuple([s * _datetype_size for s in strides])
+        a.array[offset:], shape, tuple(s * _datetype_size for s in strides)
     )
 
 
@@ -66,7 +65,7 @@ def scalar_div(a, val, out):
 
 
 def scalar_power(a, val, out):
-    out.array[:] = a.array ** power
+    out.array[:] = a.array**val
 
 
 def ewise_maximum(a, b, out):

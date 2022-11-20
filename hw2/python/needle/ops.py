@@ -8,6 +8,7 @@ from typing import List, Optional
 import numpy as array_api
 
 from .autograd import NDArray, Op, Tensor, TensorOp, TensorTuple, TensorTupleOp, Value
+from .init import *
 
 
 class MakeTensorTuple(TensorTupleOp):
@@ -148,7 +149,7 @@ class EWiseDiv(TensorOp):
 
     def gradient(self, out_grad, node):
         lhs, rhs = node.inputs
-        return out_grad / rhs, -out_grad * lhs / rhs ** 2
+        return out_grad / rhs, -out_grad * lhs / rhs**2
 
 
 def divide(a, b):
@@ -213,9 +214,7 @@ class BroadcastTo(TensorOp):
         input_shape = node.inputs[0].shape
 
         if len(input_shape) != len(self.shape):
-            input_shape = tuple(
-                [1] * (len(self.shape) - len(input_shape)) + list(input_shape)
-            )
+            input_shape = tuple([1] * (len(self.shape) - len(input_shape)) + list(input_shape))
 
         axes = tuple(i for i, a in enumerate(input_shape) if a == 1)
         return (out_grad.sum(axes).reshape(input_shape),)
@@ -258,16 +257,12 @@ class MatMul(TensorOp):
 
         if len(lhs.shape) > len(rhs.shape):
             axes = tuple(i for i in range(len(lhs.shape) - len(rhs.shape)))
-            return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(
-                out_grad
-            ).sum(axes)
+            return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(out_grad).sum(axes)
         elif len(lhs.shape) < len(rhs.shape):
 
             axes = tuple(i for i in range(len(rhs.shape) - len(lhs.shape)))
 
-            return out_grad.matmul(rhs.transpose()).sum(axes), lhs.transpose().matmul(
-                out_grad
-            )
+            return out_grad.matmul(rhs.transpose()).sum(axes), lhs.transpose().matmul(out_grad)
 
         return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(out_grad)
 
@@ -338,10 +333,7 @@ class LogSumExp(TensorOp):
     def compute(self, Z):
         if self.axes is None:
             max_z = array_api.amax(Z, self.axes)
-            return (
-                array_api.log(array_api.sum(array_api.exp(Z - max_z), self.axes))
-                + max_z
-            )
+            return array_api.log(array_api.sum(array_api.exp(Z - max_z), self.axes)) + max_z
 
         if type(self.axes) not in (tuple, list):
             self.axes = (self.axes,)
@@ -352,10 +344,7 @@ class LogSumExp(TensorOp):
 
         max_z_reshape = array_api.broadcast_to(max_z.reshape(shape), Z.shape)
 
-        return (
-            array_api.log(array_api.sum(array_api.exp(Z - max_z_reshape), self.axes))
-            + max_z
-        )
+        return array_api.log(array_api.sum(array_api.exp(Z - max_z_reshape), self.axes)) + max_z
 
     def gradient(self, out_grad, node):
         input = node.inputs[0]

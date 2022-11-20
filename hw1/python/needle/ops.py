@@ -92,7 +92,7 @@ class EWiseDiv(TensorOp):
 
     def gradient(self, out_grad, node):
         lhs, rhs = node.inputs
-        return out_grad / rhs, -out_grad * lhs / rhs ** 2
+        return out_grad / rhs, -out_grad * lhs / rhs**2
 
 
 def divide(a, b):
@@ -198,16 +198,12 @@ class MatMul(TensorOp):
 
         if len(lhs.shape) > len(rhs.shape):
             axes = tuple(i for i in range(len(lhs.shape) - len(rhs.shape)))
-            return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(
-                out_grad
-            ).sum(axes)
+            return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(out_grad).sum(axes)
         elif len(lhs.shape) < len(rhs.shape):
 
             axes = tuple(i for i in range(len(rhs.shape) - len(lhs.shape)))
 
-            return out_grad.matmul(rhs.transpose()).sum(axes), lhs.transpose().matmul(
-                out_grad
-            )
+            return out_grad.matmul(rhs.transpose()).sum(axes), lhs.transpose().matmul(out_grad)
 
         return out_grad.matmul(rhs.transpose()), lhs.transpose().matmul(out_grad)
 
@@ -258,8 +254,7 @@ class ReLU(TensorOp):
 
     def gradient(self, out_grad, node):
         return (
-            out_grad
-            * Tensor(array_api.where(node.inputs[0].realize_cached_data() > 0, 1, 0)),
+            out_grad * Tensor(array_api.where(node.inputs[0].realize_cached_data() > 0, 1, 0)),
         )
 
 

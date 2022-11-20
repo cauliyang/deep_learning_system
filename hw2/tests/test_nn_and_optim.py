@@ -82,7 +82,7 @@ def batchnorm_running_grad(*shape, iters=10):
         x = get_tensor(*shape, entropy=i)
         y = bn(x)
     bn.eval()
-    (y ** 2).sum().backward()
+    (y**2).sum().backward()
     return x.grad.cached_data
 
 
@@ -162,18 +162,14 @@ def sequential_backward(batches=3):
 
 def residual_forward(shape=(5, 5)):
     np.random.seed(42)
-    f = nn.Residual(
-        nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1]))
-    )
+    f = nn.Residual(nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1])))
     x = get_tensor(*shape[::-1])
     return f(x).cached_data
 
 
 def residual_backward(shape=(5, 5)):
     np.random.seed(42)
-    f = nn.Residual(
-        nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1]))
-    )
+    f = nn.Residual(nn.Sequential(nn.Linear(*shape), nn.ReLU(), nn.Linear(*shape[::-1])))
     x = get_tensor(*shape[::-1])
     f(x).sum().backward()
     return x.grad.cached_data
@@ -236,9 +232,7 @@ def learn_model_1d_eval(feature_size, nclasses, _model, optimizer, epochs=1, **k
         opt.step()
 
     X_test = ndl.Tensor(get_tensor(batch, feature_size).cached_data)
-    y_test = ndl.Tensor(
-        get_int_tensor(batch, low=0, high=nclasses).cached_data.astype(np.uint8)
-    )
+    y_test = ndl.Tensor(get_int_tensor(batch, low=0, high=nclasses).cached_data.astype(np.uint8))
 
     model.eval()
 
@@ -316,12 +310,12 @@ def check_training_mode():
 
 def power_scalar_forward(shape, power=2):
     x = get_tensor(*shape)
-    return (x ** power).cached_data
+    return (x**power).cached_data
 
 
 def power_scalar_backward(shape, power=2):
     x = get_tensor(*shape)
-    y = (x ** power).sum()
+    y = (x**power).sum()
     y.backward()
     return x.grad.cached_data
 
@@ -378,9 +372,9 @@ def mlp_resnet_num_params(dim, hidden_dim, num_blocks, num_classes, norm):
 def mlp_resnet_forward(dim, hidden_dim, num_blocks, num_classes, norm, drop_prob):
     np.random.seed(4)
     input_tensor = ndl.Tensor(np.random.randn(2, dim), dtype=np.float32)
-    output_tensor = MLPResNet(
-        dim, hidden_dim, num_blocks, num_classes, norm, drop_prob
-    )(input_tensor)
+    output_tensor = MLPResNet(dim, hidden_dim, num_blocks, num_classes, norm, drop_prob)(
+        input_tensor
+    )
     return output_tensor.numpy()
 
 
@@ -422,9 +416,7 @@ def train_mnist_1(batch_size, epochs, optimizer, lr, weight_decay, hidden_dim):
 def test_check_prng_contact_us_if_this_fails_1():
     np.testing.assert_allclose(
         check_prng(3, 3),
-        np.array(
-            [[2.1, 0.95, 3.45], [3.1, 2.45, 2.3], [3.3, 0.4, 1.2]], dtype=np.float32
-        ),
+        np.array([[2.1, 0.95, 3.45], [3.1, 2.45, 2.3], [3.3, 0.4, 1.2]], dtype=np.float32),
         rtol=1e-08,
         atol=1e-08,
     )
@@ -1246,9 +1238,7 @@ def test_nn_layernorm_backward_2():
 def test_nn_layernorm_backward_3():
     np.testing.assert_allclose(
         layernorm_backward((1, 5), 5),
-        np.array(
-            [[0.150192, 0.702322, -3.321343, 0.31219, 2.156639]], dtype=np.float32
-        ),
+        np.array([[0.150192, 0.702322, -3.321343, 0.31219, 2.156639]], dtype=np.float32),
         rtol=1e-5,
         atol=1e-5,
     )
@@ -1444,9 +1434,7 @@ def test_nn_dropout_forward_1():
 def test_nn_dropout_backward_1():
     np.testing.assert_allclose(
         dropout_backward((2, 3), prob=0.26),
-        np.array(
-            [[1.3513514, 0.0, 0.0], [1.3513514, 0.0, 1.3513514]], dtype=np.float32
-        ),
+        np.array([[1.3513514, 0.0, 0.0], [1.3513514, 0.0, 1.3513514]], dtype=np.float32),
         rtol=1e-5,
         atol=1e-5,
     )
@@ -1501,9 +1489,7 @@ def submit_nn_residual():
 def test_nn_flatten_forward_1():
     np.testing.assert_allclose(
         flatten_forward(3, 3),
-        np.array(
-            [[2.1, 0.95, 3.45], [3.1, 2.45, 2.3], [3.3, 0.4, 1.2]], dtype=np.float32
-        ),
+        np.array([[2.1, 0.95, 3.45], [3.1, 2.45, 2.3], [3.3, 0.4, 1.2]], dtype=np.float32),
         rtol=1e-5,
         atol=1e-5,
     )
@@ -1928,9 +1914,7 @@ def test_optim_sgd_layernorm_residual_1():
 # We're checking that you have not allocated too many tensors;
 # if this fails, make sure you're using .detach()/.data whenever possible.
 def test_optim_sgd_z_memory_check_1():
-    np.testing.assert_allclose(
-        global_tensor_count(), np.array(387), rtol=1e-5, atol=1000
-    )
+    np.testing.assert_allclose(global_tensor_count(), np.array(387), rtol=1e-5, atol=1000)
 
 
 def submit_optim_sgd():
@@ -2104,9 +2088,7 @@ def test_optim_adam_weight_decay_bias_correction_1():
 # We're checking that you have not allocated too many tensors;
 # if this fails, make sure you're using .detach()/.data whenever possible.
 def test_optim_adam_z_memory_check_1():
-    np.testing.assert_allclose(
-        global_tensor_count(), np.array(1132), rtol=1e-5, atol=1000
-    )
+    np.testing.assert_allclose(global_tensor_count(), np.array(1132), rtol=1e-5, atol=1000)
 
 
 def submit_optim_adam():
