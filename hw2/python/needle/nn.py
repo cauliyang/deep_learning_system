@@ -80,22 +80,18 @@ class Identity(Module):
 
 
 class Linear(Module):
-    def __init__(
-        self, in_features, out_features, bias=True, device=None, dtype="float32"
-    ):
+    def __init__(self, in_features, out_features, bias=True, device=None, dtype="float32"):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Parameter(
-            init.kaiming_uniform(
-                self.in_features, self.out_features, device=device, dtype=dtype
-            )
+            init.kaiming_uniform(self.in_features, self.out_features, device=device, dtype=dtype)
         )
         if bias:
             self.bias = Parameter(
-                init.kaiming_uniform(
-                    self.out_features, 1, device=device, dtype=dtype
-                ).reshape(shape=(1, self.out_features))
+                init.kaiming_uniform(self.out_features, 1, device=device, dtype=dtype).reshape(
+                    shape=(1, self.out_features)
+                )
             )
 
     def forward(self, X: Tensor) -> Tensor:
@@ -142,8 +138,7 @@ class SoftmaxLoss(Module):
         y_one_hot = init.one_hot(classes, y, device=logits.device, dtype=logits.dtype)
         return (
             ops.summation(
-                ops.logsumexp(logits, axes=1)
-                - ops.summation(logits * y_one_hot, axes=1)
+                ops.logsumexp(logits, axes=1) - ops.summation(logits * y_one_hot, axes=1)
             )
             / logits.shape[0]
         )
@@ -194,9 +189,7 @@ class BatchNorm1d(Module):
 
             return (x - expect.broadcast_to(x.shape)) / ops.power_scalar(
                 variance.broadcast_to(x.shape) + self.eps, 0.5
-            ) * self.weight.data.broadcast_to(x.shape) + self.bias.data.broadcast_to(
-                x.shape
-            )
+            ) * self.weight.data.broadcast_to(x.shape) + self.bias.data.broadcast_to(x.shape)
 
 
 class LayerNorm1d(Module):
@@ -211,8 +204,7 @@ class LayerNorm1d(Module):
     def forward(self, x: Tensor) -> Tensor:
         expect = (ops.summation(x, 1) / self.dim).reshape((x.shape[0], 1))
         variance = (
-            ops.summation(ops.power_scalar(x - expect.broadcast_to(x.shape), 2), 1)
-            / self.dim
+            ops.summation(ops.power_scalar(x - expect.broadcast_to(x.shape), 2), 1) / self.dim
         ).reshape((x.shape[0], 1))
 
         return self.weight.broadcast_to(x.shape) * (

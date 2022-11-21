@@ -107,9 +107,7 @@ class RandomCrop(Transform):
             H x W x C NAArray of cliped image
         Note: generate the image shifted by shift_x, shift_y specified below
         """
-        shift_x, shift_y = np.random.randint(
-            low=-self.padding, high=self.padding + 1, size=2
-        )
+        shift_x, shift_y = np.random.randint(low=-self.padding, high=self.padding + 1, size=2)
         h, w, _ = img.shape
 
         padded_img = np.pad(

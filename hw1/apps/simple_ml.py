@@ -85,9 +85,7 @@ def softmax_loss(Z, y):
         Average softmax loss over the sample.
     """
     return (
-        ndl.summation(
-            ndl.log(ndl.summation(ndl.exp(Z), axes=1)) - ndl.summation(Z * y, axes=1)
-        )
+        ndl.summation(ndl.log(ndl.summation(ndl.exp(Z), axes=1)) - ndl.summation(Z * y, axes=1))
         / Z.shape[0]
     )
 

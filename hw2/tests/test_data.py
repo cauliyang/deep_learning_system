@@ -10709,10 +10709,7 @@ def test_mnist_dataset():
         ]
     )
     sample_labels = np.array(
-        [
-            mnist_train_dataset[idx][1]
-            for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]
-        ]
+        [mnist_train_dataset[idx][1] for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]]
     )
     compare_labels = np.array([0, 7, 0, 5, 9, 7, 7, 8])
 
@@ -10734,10 +10731,7 @@ def test_mnist_dataset():
         [9.857545, 8.980832, 8.57207, 6.891522, 8.192135, 9.400087, 8.645003, 7.405202]
     )
     sample_labels = np.array(
-        [
-            mnist_train_dataset[idx][1]
-            for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]
-        ]
+        [mnist_train_dataset[idx][1] for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]]
     )
     compare_labels = np.array([2, 4, 9, 6, 6, 9, 3, 1])
 
@@ -10763,10 +10757,7 @@ def test_mnist_dataset():
         [2.0228338, 0.0, 7.4892044, 0.0, 0.0, 3.8012788, 9.583429, 4.2152724]
     )
     sample_labels = np.array(
-        [
-            mnist_train_dataset[idx][1]
-            for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]
-        ]
+        [mnist_train_dataset[idx][1] for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]]
     )
     compare_labels = np.array([0, 7, 0, 5, 9, 7, 7, 8])
 
@@ -10799,10 +10790,7 @@ def test_mnist_dataset():
         ]
     )
     sample_labels = np.array(
-        [
-            mnist_train_dataset[idx][1]
-            for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]
-        ]
+        [mnist_train_dataset[idx][1] for idx in [1, 42, 1000, 2000, 3000, 4000, 5000, 5005]]
     )
     compare_labels = np.array([0, 7, 0, 5, 9, 7, 7, 8])
 
@@ -10873,12 +10861,8 @@ def test_dataloader_mnist():
         np.testing.assert_allclose(truth_x, batch_x)
         np.testing.assert_allclose(batch_y, truth_y)
 
-    noshuf = bat9 = ndl.data.DataLoader(
-        dataset=mnist_test_dataset, batch_size=10, shuffle=False
-    )
-    shuf = bat9 = ndl.data.DataLoader(
-        dataset=mnist_test_dataset, batch_size=10, shuffle=True
-    )
+    noshuf = bat9 = ndl.data.DataLoader(dataset=mnist_test_dataset, batch_size=10, shuffle=False)
+    shuf = bat9 = ndl.data.DataLoader(dataset=mnist_test_dataset, batch_size=10, shuffle=True)
     diff = False
     for i, j in zip(shuf, noshuf):
         if i != j:
@@ -10915,9 +10899,7 @@ def test_dataloader_ndarray():
     )
 
     elements = np.array([next(train_dataloader)[0].numpy().item() for _ in range(10)])
-    np.testing.assert_allclose(
-        elements, np.array([26, 86, 2, 55, 75, 93, 16, 73, 54, 95])
-    )
+    np.testing.assert_allclose(elements, np.array([26, 86, 2, 55, 75, 93, 16, 73, 54, 95]))
 
     batch_size = 10
     train_dataset = ndl.data.NDArrayDataset(
@@ -10929,9 +10911,7 @@ def test_dataloader_ndarray():
         ndl.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     )
 
-    elements = np.array(
-        [np.linalg.norm(next(train_dataloader)[0].numpy()) for _ in range(10)]
-    )
+    elements = np.array([np.linalg.norm(next(train_dataloader)[0].numpy()) for _ in range(10)])
     np.testing.assert_allclose(
         elements,
         np.array(

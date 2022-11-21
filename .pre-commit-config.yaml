@@ -57,7 +57,7 @@ repos:
             "--extend-ignore",
             "E203,E402,E501,F401,F841",
             "--exclude",
-            "logs/*,data/*,*/tests/*",
+            "logs/*,data/*,*/tests/*,hw4/*",
           ]
 
   # python security linter
@@ -121,7 +121,7 @@ repos:
         args:
           [
             "--extend-ignore=E203,E402,E501,F401,F841,E231",
-            "--exclude=logs/*,data/*,hw2/tests/*,lecture4/*",
+            "--exclude=logs/*,data/*,hw2/tests/*,hw4/*",
           ]
       - id: nbqa-pyupgrade
         args: ["--py37-plus"]

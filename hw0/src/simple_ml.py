@@ -34,9 +34,7 @@ def byteorder():
 def parse_image(filename):
     bytes = gzip.open(filename, "rb").read()
 
-    _, num_of_images, num_of_rows, num_of_columns = struct.unpack(
-        f"{byteorder()}4l", bytes[:16]
-    )
+    _, num_of_images, num_of_rows, num_of_columns = struct.unpack(f"{byteorder()}4l", bytes[:16])
     pixels = []
     for (pixel,) in struct.iter_unpack(f"{byteorder()}B", bytes[16:]):
         pixels.append(pixel)
@@ -229,12 +227,8 @@ def train_nn(X_tr, y_tr, X_te, y_te, hidden_dim=500, epochs=10, lr=0.5, batch=10
 
 
 if __name__ == "__main__":
-    X_tr, y_tr = parse_mnist(
-        "data/train-images-idx3-ubyte.gz", "data/train-labels-idx1-ubyte.gz"
-    )
-    X_te, y_te = parse_mnist(
-        "data/t10k-images-idx3-ubyte.gz", "data/t10k-labels-idx1-ubyte.gz"
-    )
+    X_tr, y_tr = parse_mnist("data/train-images-idx3-ubyte.gz", "data/train-labels-idx1-ubyte.gz")
+    X_te, y_te = parse_mnist("data/t10k-images-idx3-ubyte.gz", "data/t10k-labels-idx1-ubyte.gz")
 
     print("Training softmax regression")
     train_softmax(X_tr, y_tr, X_te, y_te, epochs=10, lr=0.1)
