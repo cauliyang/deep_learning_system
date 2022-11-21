@@ -134,25 +134,6 @@ void ScalarSetitem(const size_t size, scalar_t val, AlignedArray *out, const std
   /// END YOUR SOLUTION
 }
 
-void EwiseAdd(const AlignedArray &a, const AlignedArray &b, AlignedArray *out) {
-  /**
-   * Set entries in out to be the sum of corresponding entires in a and b.
-   */
-  for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = a.ptr[i] + b.ptr[i];
-  }
-}
-
-void ScalarAdd(const AlignedArray &a, scalar_t val, AlignedArray *out) {
-  /**
-   * Set entries in out to be the sum of corresponding entry in a plus the scalar val.
-   */
-  for (size_t i = 0; i < a.size; i++) {
-    out->ptr[i] = a.ptr[i] + val;
-  }
-}
-
-
 /**
  * In the code the follows, use the above template to create analogous element-wise
  * and and scalar operators for the following functions.  See the numpy backend for
@@ -174,6 +155,8 @@ void ScalarAdd(const AlignedArray &a, scalar_t val, AlignedArray *out) {
  */
 
 /// BEGIN YOUR SOLUTION
+EWISE_BINARY_OP(Add, std::plus{})
+SCALAR_BINARY_OP(Add, std::plus{})
 EWISE_BINARY_OP(Mul, std::multiplies{})
 SCALAR_BINARY_OP(Mul, std::multiplies{})
 EWISE_BINARY_OP(Div, std::divides{})
@@ -207,6 +190,16 @@ void Matmul(const AlignedArray &a, const AlignedArray &b, AlignedArray *out, uin
 
   /// BEGIN YOUR SOLUTION
 
+  for (uint32_t i = 0; i < m; ++i) {
+    for (uint32_t j = 0; j < p; ++j) {
+      scalar_t sum = 0;
+      for (uint32_t k = 0; k < n; ++k) {
+        sum += a.ptr[i * n + k] * b.ptr[k * p + j];
+      }
+      out->ptr[i * p + j] = sum;
+    }
+  }
+
   /// END YOUR SOLUTION
 }
 
@@ -237,6 +230,13 @@ inline void AlignedDot(const float *__restrict__ a,
 
   /// BEGIN YOUR SOLUTION
 
+  for (uint32_t i = 0; i < TILE; ++i) {
+    for (uint32_t j = 0; j < TILE; ++j) {
+      for (uint32_t k = 0; k < TILE; ++k) {
+        out[i * TILE + j] += a[i * TILE + k] * b[k * TILE + j];
+      }
+    }
+  }
   /// END YOUR SOLUTION
 }
 
@@ -263,6 +263,21 @@ void MatmulTiled(const AlignedArray &a, const AlignedArray &b, AlignedArray *out
    */
   /// BEGIN YOUR SOLUTION
 
+  // init out to zero
+  for (int i = 0; i < m * p; ++i) {
+    out->ptr[i] = 0;
+  }
+
+  for (uint32_t i = 0; i < m / TILE; ++i) {
+    for (uint32_t j = 0; j < p / TILE; ++j) {
+      for (uint32_t k = 0; k < n / TILE; ++k) {
+        AlignedDot(a.ptr + (i * n / TILE + k) * TILE * TILE,
+                   b.ptr + (k * p / TILE + j) * TILE * TILE,
+                   out->ptr + (i * p / TILE + j) * TILE * TILE);
+      }
+    }
+  }
+
   /// END YOUR SOLUTION
 }
 
@@ -277,6 +292,16 @@ void ReduceMax(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
    */
 
   /// BEGIN YOUR SOLUTION
+  std::vector<scalar_t> tmp(reduce_size);
+
+  for (size_t i = 0; i < out->size; i++) {
+    for (size_t j = 0; j < reduce_size; j++) {
+      tmp[j] = a.ptr[i * reduce_size + j];
+    }
+
+    out->ptr[i] = *std::max_element(tmp.begin(), tmp.end());
+  }
+
 
   /// END YOUR SOLUTION
 }
@@ -292,6 +317,14 @@ void ReduceSum(const AlignedArray &a, AlignedArray *out, size_t reduce_size) {
    */
 
   /// BEGIN YOUR SOLUTION
+
+  for (size_t i = 0; i < out->size; i++) {
+    float sum = 0;
+    for (size_t j = 0; j < reduce_size; j++) {
+      sum += a.ptr[i * reduce_size + j];
+    }
+    out->ptr[i] = sum;
+  }
 
   /// END YOUR SOLUTION
 }

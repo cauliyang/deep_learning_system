@@ -144,7 +144,7 @@ class Value:
         return value
 
 
-### Not needed in HW1
+# Not needed in HW1
 class TensorTuple(Value):
     """Represent a tuple of tensors.
 
@@ -295,9 +295,10 @@ class Tensor(Value):
             return needle.ops.MulScalar(other)(self)
 
     def __pow__(self, other):
-        ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        if isinstance(other, Tensor):
+            raise NotImplementedError()
+        else:
+            return needle.ops.PowerScalar(other)(self)
 
     def __sub__(self, other):
         if isinstance(other, Tensor):
@@ -344,11 +345,10 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     Store the computed result in the grad field of each Variable.
     """
     # a map from node to a list of gradient contributions from each output node
-    node_to_output_grads_list: Dict[Tensor, List[Tensor]] = {}
+    node_to_output_grads_list: Dict[Tensor, List[Tensor]] = {output_tensor: [out_grad]}
     # Special note on initializing gradient of
     # We are really taking a derivative of the scalar reduce_sum(output_node)
     # instead of the vector output_node. But this is the common case for loss function.
-    node_to_output_grads_list[output_tensor] = [out_grad]
 
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
@@ -404,7 +404,7 @@ def topo_sort_dfs(node, visited, topo_order):
 
 
 ##############################
-####### Helper Methods #######
+# Helper Methods #######
 ##############################
 
 
