@@ -34,3 +34,13 @@ TEST_CASE("test_get_indices_3d") {
   std::vector<uint32_t> expected{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
   CHECK(res == expected);
 }
+
+TEST_CASE("temp") {
+  using namespace needle::cpu;
+  std::vector<uint32_t> shape{2, 2};
+  std::vector<uint32_t> strides{4, 1};
+  auto res = get_indices(shape, strides);
+  for (auto i : res) {
+    std::cout << i << std::endl;
+  }
+}
